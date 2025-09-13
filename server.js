@@ -58,7 +58,7 @@ app.post("/inspecciones-ia", async (req, res) => {
     const { nombreSoftware, descripcion } = req.body;
     
     // Llamada a la API de IA en C#
-    const response = await axios.post("http://localhost:5169/api/auditar", {
+    const response = await axios.post("http://localhost:5169/analizar", {
       nombreSoftware,
       descripcion,
     });
