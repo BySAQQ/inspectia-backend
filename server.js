@@ -96,8 +96,6 @@ app.delete('/inspecciones/:id', (req, res) => {
   res.json({ message: 'Inspección eliminada correctamente' });
 });
 
-
-
 // Servidor
 app.listen(PORT, () => {
   console.log(`✅ Backend escuchando en http://localhost:${PORT}`);
