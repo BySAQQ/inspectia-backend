@@ -5,9 +5,23 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = 4000;
 
+const multer = require('multer');
+const path = require('path');
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage });
+
 app.use(cors());
 app.use(bodyParser.json());
-
+app.use('/uploads', express.static('uploads'));
 
 let inspecciones = [];
 let usuarios = [
@@ -69,6 +83,22 @@ app.get("/inspecciones", (req, res) => {
   res.json(inspecciones);
 });
 
+app.post('/inspecciones', upload.single('imagen'), (req, res) => {
+  const { nombreSoftware, descripcion } = req.body;
+  const imagen = req.file ? req.file.filename : null;
+
+  const inspeccion = {
+    id: Date.now(),
+    nombreSoftware,
+    descripcion,
+    imagen
+  };
+
+  inspecciones.push(inspeccion);
+
+  res.json({ success: true, inspeccion });
+});
+
 app.post("/inspecciones", (req, res) => {
   const { nombreSoftware, descripcion } = req.body;
 
@@ -115,11 +145,10 @@ app.post("/inspecciones-ia", async (req, res) => {
     });
 
     const nuevaInspeccion = {
-      id: inspecciones.length + 1,
+      id: Date.now(),
       nombreSoftware,
       descripcion,
-      resultado: response.data.resultado, //resultado de la IA
-      fecha: new Date().toISOString(),
+      resultadoIA: response.data.resultado, //resultado de la IA
     };
 
     inspecciones.push(nuevaInspeccion);
